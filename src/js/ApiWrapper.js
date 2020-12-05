@@ -11,9 +11,6 @@ class ApiWrapper {
     this._axios = axios.create({
       baseURL: this._baseUrl
     });
-
-    // get user id in init stage
-    this.getUserId();
   }
 
   /**
@@ -42,7 +39,7 @@ class ApiWrapper {
 
   /**
    * Get the id of the user in this session.
-   * This method will be called in constructor.
+   * Must call this before access any other API.
    * @returns {string} The id of the user in this session.
    */
   async getUserId() {
