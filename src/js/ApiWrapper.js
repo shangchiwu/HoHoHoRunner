@@ -40,7 +40,9 @@ class ApiWrapper {
   /**
    * Get the id of the user in this session.
    * Must call this before access any other API.
-   * @returns {string} The id of the user in this session.
+   * @async
+   * @returns {Promise<string>} The id of the user in this session.
+   * @throws If net error or incorrect API format.
    */
   async getUserId() {
     const res = await this._axios.post('/', {
@@ -52,7 +54,9 @@ class ApiWrapper {
 
   /**
    * Get the maze data.
-   * @returns The size and walls of the maze.
+   * @async
+   * @returns {Promise<Object>} The size and walls of the maze.
+   * @throws If net error or incorrect API format.
    */
   async getMaze() {
     const res = await this._axios.post('/', {
@@ -67,7 +71,9 @@ class ApiWrapper {
 
   /**
    * Get the current state of the user.
-   * @returns {object} The position of the user in [x, y], and direction in degree.
+   * @async
+   * @returns {Promise<Object>} The position of the user in [x, y], and direction in degree.
+   * @throws If net error or incorrect API format.
    */
   async getPosition() {
     const res = await this._axios.post('/', {
