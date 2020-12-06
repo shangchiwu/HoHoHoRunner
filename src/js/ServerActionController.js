@@ -1,6 +1,8 @@
 import ActionController from './ActionController.js';
 import ApiWrapper from './ApiWrapper.js';
 
+const EXPONENTIAL_SMOOTHING_FACTOR = 0.8;
+
 class ServerActionController extends ActionController {
   /**
    * Class constructor.
@@ -56,7 +58,7 @@ class ServerActionController extends ActionController {
   start() {
     this._lastUpdateTimestamp = null;
     this._avgNetworkDelay = null;
-    this.update();
+    this.update(true);
   }
 
   /**
@@ -70,15 +72,20 @@ class ServerActionController extends ActionController {
   }
 
   /**
-   * Force to request a state update from server.
+   * Request a state update from server.
+   * @async
+   * @param {boolean} [loop=false] True to update continuously instead of update once.
    */
-  async update() {
-    // schedule next update
-    const nextUpdateTimer = setTimeout(() => { this.update(); }, this._updateInterval);
+  async update(loop=false) {
 
-    // clear original scheduled timer
-    clearTimeout(this._updateTimer);
-    this._updateTimer = nextUpdateTimer;
+    if (loop) {
+      // schedule next update
+      const nextUpdateTimer = setTimeout(() => { this.update(true); }, this._updateInterval);
+
+      // clear original scheduled timer
+      clearTimeout(this._updateTimer);
+      this._updateTimer = nextUpdateTimer;
+    }
 
     // fetch new state
     const sendTimestamp = performance.now();
@@ -86,27 +93,29 @@ class ServerActionController extends ActionController {
     const networkDelay = performance.now() - sendTimestamp;
 
     // check whether current update is canceled
-    if (this._updateTimer !== nextUpdateTimer)
+    if (loop && this._updateTimer !== nextUpdateTimer)
       return;
     
     // update state
     this._state = newState;
 
     // compute statistics
-    const now = performance.now();
-    if (this._lastUpdateTimestamp !== null) {
-      const interval = now - this._lastUpdateTimestamp;
-      if (this._avgUpdateInterval === null)
-        this._avgUpdateInterval = interval;
-      else
-        this._avgUpdateInterval = this._avgUpdateInterval + 0.8 * (interval - this._avgUpdateInterval);
+    if (loop) {
+      const now = performance.now();
+      if (this._lastUpdateTimestamp !== null) {
+        const interval = now - this._lastUpdateTimestamp;
+        if (this._avgUpdateInterval === null)
+          this._avgUpdateInterval = interval;
+        else
+          this._avgUpdateInterval = this._avgUpdateInterval + EXPONENTIAL_SMOOTHING_FACTOR * (interval - this._avgUpdateInterval);
+      }
+      this._lastUpdateTimestamp = now;
     }
-    this._lastUpdateTimestamp = now;
 
     if (this._avgNetworkDelay === null)
       this._avgNetworkDelay = networkDelay;
     else
-      this._avgNetworkDelay = this._avgNetworkDelay + 0.8 * (networkDelay - this._avgNetworkDelay);
+      this._avgNetworkDelay = this._avgNetworkDelay + EXPONENTIAL_SMOOTHING_FACTOR * (networkDelay - this._avgNetworkDelay);
   }
 }
 
