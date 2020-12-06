@@ -95,9 +95,6 @@ class ServerActionController extends ActionController {
     // check whether current update is canceled
     if (loop && this._updateTimer !== nextUpdateTimer)
       return;
-    
-    // update state
-    this._state = newState;
 
     // compute statistics
     if (loop) {
@@ -116,6 +113,9 @@ class ServerActionController extends ActionController {
       this._avgNetworkDelay = networkDelay;
     else
       this._avgNetworkDelay = this._avgNetworkDelay + EXPONENTIAL_SMOOTHING_FACTOR * (networkDelay - this._avgNetworkDelay);
+    
+    // update state
+    this.setState(newState);
   }
 }
 
