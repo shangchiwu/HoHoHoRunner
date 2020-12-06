@@ -16,7 +16,7 @@ class ApiWrapper {
   /**
    * Get text from App Inventor.
    * @returns {string} The text set by App Inventor.
-   * @throws If cannot find API of App Inventor.
+   * @throws {ApiAccessError} If cannot find API of App Inventor.
    */
   getAppInventorWebviewString() {
     if (window.AppInventor === undefined)
@@ -28,7 +28,7 @@ class ApiWrapper {
   /**
    * Send text to App Inventor.
    * @param {string} str - The text to be send.
-   * @throws If cannot find API of App Inventor.
+   * @throws {ApiAccessError} If cannot find API of App Inventor.
    */
   setAppInventorWebviewString(str) {
     if (window.AppInventor === undefined)
@@ -42,12 +42,17 @@ class ApiWrapper {
    * Must call this before access any other API.
    * @async
    * @returns {Promise<string>} The id of the user in this session.
-   * @throws If net error or incorrect API format.
+   * @throws {ApiAccessError} If network error or incorrect API format.
    */
   async getUserId() {
-    const res = await this._axios.post('/', {
-      action: 'getUserId'
-    });
+    let res;
+    try {
+      res = await this._axios.post('/', {
+        action: 'getUserId'
+      });
+    } catch {
+      throw new ApiAccessError(`Cannot access 'getUserId' API.`);
+    }
     this.userId = res.id;
     return res.id;
   }
@@ -56,13 +61,18 @@ class ApiWrapper {
    * Get the maze data.
    * @async
    * @returns {Promise<Object>} The size and walls of the maze.
-   * @throws If net error or incorrect API format.
+   * @throws {ApiAccessError} If network error or incorrect API format.
    */
   async getMaze() {
-    const res = await this._axios.post('/', {
-      action: 'getMaze',
-      id: this.userId
-    });
+    let res;
+    try {
+      res = await this._axios.post('/', {
+        action: 'getMaze',
+        id: this.userId
+      });
+    } catch {
+      throw new ApiAccessError(`Cannot access 'getMaze' API.`);
+    }
     return {
       size: res.size,
       map: res.maze
@@ -73,13 +83,18 @@ class ApiWrapper {
    * Get the current state of the user.
    * @async
    * @returns {Promise<Object>} The position of the user in [x, y], and direction in degree.
-   * @throws If net error or incorrect API format.
+   * @throws {ApiAccessError} If net error or incorrect API format.
    */
   async getPosition() {
-    const res = await this._axios.post('/', {
-      action: 'getPosition',
-      id: this.userId
-    });
+    let res;
+    try {
+      res = await this._axios.post('/', {
+        action: 'getPosition',
+        id: this.userId
+      });
+    } catch {
+      throw new ApiAccessError(`Cannot access 'getPosition' API.`);
+    }
     return {
       position: res.position.map(parseFloat),
       direction: parseFloat(res.direction)
@@ -87,4 +102,12 @@ class ApiWrapper {
   }
 }
 
+class ApiAccessError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'ApiAccessError';
+  }
+}
+
 export default ApiWrapper;
+export { ApiAccessError };
