@@ -2,36 +2,49 @@ import * as THREE from './library/three.module.js';
 
 class RenderController {
   constructor() {
+    // init scene
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color('black');
-    this.light = new THREE.DirectionalLight(new THREE.Color('white'));
-    this.camera = new THREE.CubeCamera(0.1, 1000, 256);
-    this.renderer = new WebGLRenderer({alpha: true, antialias: true});
+    this.scene.background = new THREE.Color(0x2a6bdc);
+    
+    // init light
+    const directionLight = new THREE.DirectionalLight(new THREE.Color('white'));
+    directionLight.position.z = 1;
+    this.scene.add(directionLight);
+    const ambientLight = new THREE.AmbientLight(new THREE.Color('white'));
+    this.scene.add(ambientLight);
+
+    // init camera
+    this.camera = new THREE.PerspectiveCamera(120, window.innerWidth / window.innerHeight, 0.01, 10000);
+    this.camera.position.y = 0.5;
+    this.scene.add(this.camera);
+
+    // init renderer
+    this.renderer = new THREE.WebGLRenderer({antialias: true});
     this.renderer.shadowMap.enabled = true;
-    this.space = {
-      geometry: new THREE.BoxGeometry(1, 1, 1),
-      material: new THREE.MeshBasicMaterial({color: 0x00ff00}),
-      mesh: new THREE.Mesh(geometry, material)
-    }
   }
 
   /** Get the DOM element of the renderer
    * @return {HTMLCanvasElement}
    */
   getRenderDom() {
-	  return renderer.domElement;
+	  return this.renderer.domElement;
   }
 
   /** Set the position of camera
    * @param {number[]} position camera position in [x, y] format.
    * @param {number} direction the direction of camera (0 ~ 359 degree).
    */
-  setCamera(position, direction) {
-    this.camera.position.x = position[0];
-    this.camera.position.z = position[1];
-    this.camera.position.y = position[2];
-    this.camera.lookAt(direction);
-    this.scene.add(this.camera);
+  setCamera([x, y], direction) {
+    // move camera
+    this.camera.position.x = x;
+    this.camera.position.z = y;
+
+    // compute look at
+    const lookPoint = new THREE.Vector3(0, 0, -1)
+      .applyAxisAngle(THREE.Object3D.DefaultUp, -1 * THREE.Math.degToRad(direction))
+      .add(this.camera.position);
+    this.camera.lookAt(lookPoint);
+    this.camera.updateProjectionMatrix();
   }
 
   /** Init the maze.
@@ -43,23 +56,18 @@ class RenderController {
    *   ...
    * ]
    */
-  setMaze(size, map) {
-    this.space.geometry = new THREE.BoxGeometry(size[0], size[1], 1);
-    for(const segment of map){
-      const wall = new THREE.OBJLoader();
-      const x = segment[0][0];
-      const y = segment[0][1];
-      const z = segment[0][2];
-      const x_scale = segment[1][0] - segment[0][0];
-      const y_scale = segment[1][1] - segment[0][1];
-      const z_scale = segment[1][2] - segment[0][2];
-      wall.load('wall.obj', (obj, x, y, z) => {
-        obj.scale.set(x_scale, y_scale, z_scale);
-        obj.position.set(x, y, z);
-        scene.add(obj);
-      });
-    }
-    this.scene.add(this.space.mesh);
+  setMaze([sizeX, sizeY], map) {
+    // init floor
+    const floorPlaneGeomatry = new THREE.PlaneGeometry(sizeX, sizeY);
+    const floorPlaneMaterial = new THREE.MeshPhongMaterial({color: 0x00ff00});
+    const floorPlaneMesh = new THREE.Mesh(floorPlaneGeomatry, floorPlaneMaterial);
+    floorPlaneMesh.rotateX(-1 * Math.PI / 2);
+    floorPlaneMesh.position.x = sizeX / 2;
+    floorPlaneMesh.position.z = sizeY / 2;
+    this.scene.add(floorPlaneMesh);
+
+    // add wall
+    map.forEach(wall => this._placeWall(wall));
   }
 
   /**
@@ -69,17 +77,38 @@ class RenderController {
    * @param {number} height the height of current window
    */
   setWindowSize(width, height) {
-	  this.renderer.setSize(width, height);
+    this.camera.aspect = width / height;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(width, height);
   }
 
   /**
    * The render loop of the scene. This method only needs to be called once.
    */
   animate() {
-    this.camera.update(this.renderer, this.scene);
+    requestAnimationFrame(() => { this.animate(); });
     this.renderer.render(this.scene, this.camera);
-    requestAnimationFrame(animate);
-    //...
+  }
+
+  _placeWall([[startX, startY], [endX, endY]]) {
+    // make mesh
+    const wallHeigh = 1;
+    const wallThickness = 0.1;
+    const direction = new THREE.Vector3(endX - startX, 0, endY - startY);
+    const length = direction.length();
+    const angle = (new THREE.Vector3(1, 0, 0)).angleTo(direction);
+    const wallGeometry = new THREE.BoxGeometry(length + wallThickness, wallHeigh, wallThickness);
+    const wallMaterial = new THREE.MeshPhongMaterial({color: 0xcc8833});
+    const wallMesh = new THREE.Mesh(wallGeometry, wallMaterial);
+
+    // move and rotate
+    wallMesh.rotateY(angle);
+    wallMesh.position.y = wallHeigh / 2;
+    wallMesh.position.x += startX + direction.x / 2;
+    wallMesh.position.z += startY + direction.z / 2;
+
+    // add to scene
+    this.scene.add(wallMesh);
   }
 }
 
