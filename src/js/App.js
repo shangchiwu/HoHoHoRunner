@@ -28,7 +28,7 @@ class App {
    * @async
    */
   async _initApi() {
-    this._apiWrapper = new ApiWrapper(config.apiBaseUrl);
+    this._apiWrapper = new ApiWrapper(config.server.apiBaseUrl);
     const userId = await this._apiWrapper.getUserId();
     this._apiWrapper.setAppInventorWebviewString(userId);
   }
@@ -39,7 +39,7 @@ class App {
    */
   async _initActionController() {
     this._serverActionController = new ServerActionController(this._apiWrapper);
-    this._serverActionController.setUpdateInterval(config.positionUpdateInterval);
+    this._serverActionController.setUpdateInterval(config.server.positionUpdateInterval);
 
     // fetch first state from server.
     await this._serverActionController.update();

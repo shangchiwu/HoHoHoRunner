@@ -96,8 +96,8 @@ class ApiWrapper {
       throw new ApiAccessError(`Cannot access 'getPosition' API.`);
     }
     return {
-      position: res.position.map(parseFloat),
-      direction: parseFloat(res.direction)
+      position: res.position,
+      direction: res.direction
     }
   }
 }
