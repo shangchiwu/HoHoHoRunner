@@ -19,10 +19,13 @@ class ApiWrapper {
    * @throws {ApiAccessError} If cannot find API of App Inventor.
    */
   getAppInventorWebviewString() {
-    if (window.AppInventor === undefined)
-      throw new Error('Cannot find AppInventor API');
-    else
-      return window.AppInventor.getWebViewString();
+    let data;
+    try {
+      data = window.AppInventor.getWebViewString();
+    } catch {
+      throw new ApiAccessError(`Cannot access 'getWebViewString' AppInventor API`);
+    }
+    return data;
   }
 
   /**
@@ -31,10 +34,11 @@ class ApiWrapper {
    * @throws {ApiAccessError} If cannot find API of App Inventor.
    */
   setAppInventorWebviewString(str) {
-    if (window.AppInventor === undefined)
-      throw new Error('Cannot find AppInventor API');
-    else
+    try {
       window.AppInventor.setWebViewString(str);
+    } catch {
+      throw new ApiAccessError(`Cannot access 'setWebViewString' AppInventor API`);
+    }
   }
 
   /**
@@ -47,14 +51,14 @@ class ApiWrapper {
   async getUserId() {
     let res;
     try {
-      res = await this._axios.post('/', {
+      res = await this._axios.post('', {
         action: 'getUserId'
       });
     } catch {
       throw new ApiAccessError(`Cannot access 'getUserId' API.`);
     }
-    this.userId = res.id;
-    return res.id;
+    this.userId = res.data.id;
+    return this.userId;
   }
 
   /**
@@ -66,7 +70,7 @@ class ApiWrapper {
   async getMaze() {
     let res;
     try {
-      res = await this._axios.post('/', {
+      res = await this._axios.post('', {
         action: 'getMaze',
         id: this.userId
       });
@@ -74,8 +78,8 @@ class ApiWrapper {
       throw new ApiAccessError(`Cannot access 'getMaze' API.`);
     }
     return {
-      size: res.size,
-      map: res.maze
+      size: res.data.size,
+      map: res.data.maze
     };
   }
 
@@ -88,7 +92,7 @@ class ApiWrapper {
   async getPosition() {
     let res;
     try {
-      res = await this._axios.post('/', {
+      res = await this._axios.post('', {
         action: 'getPosition',
         id: this.userId
       });
@@ -96,8 +100,8 @@ class ApiWrapper {
       throw new ApiAccessError(`Cannot access 'getPosition' API.`);
     }
     return {
-      position: res.position,
-      direction: res.direction
+      position: res.data.position,
+      direction: res.data.direction
     }
   }
 }
