@@ -1,17 +1,5 @@
 import * as THREE from './library/three.module.js';
-
-const texturePath = {
-  brickWall: {
-    map: './texture/Brick_Wall_017_basecolor.jpg',
-    normalMap: './texture/Brick_Wall_017_normal.jpg',
-    // displacementMap: './texture/Brick_Wall_017_height.jpg',
-  },
-  rockGround: {
-    map: './texture/rocks_ground_08_diff_1k.jpg',
-    normalMap: './texture/rocks_ground_08_nor_1k.jpg',
-    displacementMap: './texture/rocks_ground_08_disp_1k.jpg',
-  }
-};
+import config from '../config.js';
 
 class RenderController {
   constructor() {
@@ -27,31 +15,41 @@ class RenderController {
   async init() {
     // init scene
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x2a6bdc);
+    this.scene.background = new THREE.Color(config.renderController.light.background);
     
     // init light
-    const directionLight = new THREE.DirectionalLight(new THREE.Color('white'));
-    directionLight.position.z = 1;
+    const directionLight = new THREE.DirectionalLight(
+      new THREE.Color(config.renderController.light.directional.color),
+      config.renderController.light.directional.intensity);
+    directionLight.position.set(...config.renderController.light.directional.position);
     this.scene.add(directionLight);
-    const ambientLight = new THREE.AmbientLight(new THREE.Color('white'));
+
+    const ambientLight = new THREE.AmbientLight(
+      new THREE.Color(config.renderController.light.ambient.color),
+      config.renderController.light.ambient.intensity);
     this.scene.add(ambientLight);
 
     // init camera
-    this.camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.01, 10000);
-    this.camera.position.y = 0.5;
+    this.camera = new THREE.PerspectiveCamera(
+      config.renderController.camera.fov,
+      window.innerWidth / window.innerHeight,
+      config.renderController.camera.near,
+      config.renderController.camera.far);
+    this.camera.position.set(...config.renderController.camera.defaultPosition);
     this.scene.add(this.camera);
 
     // init renderer
-    this.renderer = new THREE.WebGLRenderer({antialias: true});
+    this.renderer = new THREE.WebGLRenderer({antialias: config.renderController.antialias});
 
     // load textures
     const loader = new THREE.TextureLoader();
-    for (const textureName in texturePath) {
+    const textureSet = config.renderController.texture;
+    for (const textureName in textureSet) {
       this.textures[textureName] = {};
-      for (const textureType in texturePath[textureName]) {
+      for (const textureType in textureSet[textureName]) {
         let texture;
         try {
-          texture = await loader.loadAsync(texturePath[textureName][textureType]);
+          texture = await loader.loadAsync(textureSet[textureName][textureType]);
         } catch {
           throw new LoadTextureError(`Cannot load map '${textureType}' of texture '${textureName}'.`);
         }
@@ -95,10 +93,11 @@ class RenderController {
    */
   setMaze([sizeX, sizeY], map) {
     // init floor
-    const floorPlaneGeomatry = new THREE.PlaneGeometry(sizeX, sizeY, sizeX * 20, sizeY * 20);
-    const floorPlaneMaterial = this._getMaterial('rockGround', sizeX, sizeY);
-    floorPlaneMaterial.displacementScale = 0.4;
-    floorPlaneMaterial.displacementBias = -0.1;
+    const segmentPerUnit = config.renderController.floor.segmentPerUnit;
+    const floorPlaneGeomatry = new THREE.PlaneGeometry(sizeX, sizeY, sizeX * segmentPerUnit, sizeY * segmentPerUnit);
+    const floorPlaneMaterial = this._getMaterial(config.renderController.floor.textureName, sizeX, sizeY);
+    floorPlaneMaterial.displacementScale = config.renderController.floor.displacementScale;
+    floorPlaneMaterial.displacementBias = config.renderController.floor.displacementBias;
     const floorPlaneMesh = new THREE.Mesh(floorPlaneGeomatry, floorPlaneMaterial);
     floorPlaneMesh.matrixAutoUpdate = false;
     floorPlaneMesh.rotateX(-1 * Math.PI / 2);
@@ -137,21 +136,20 @@ class RenderController {
    */
   _placeWall([[startX, startY], [endX, endY]]) {
     // make mesh
-    const wallHeigh = 1;
-    const wallThickness = 0.1;
+    const { height, thickness, textureName, displacementScale, displacementBias } = config.renderController.wall;
     const direction = new THREE.Vector3(endX - startX, 0, endY - startY);
-    const length = direction.length() + wallThickness * 0.99;
+    const length = direction.length() + thickness * 0.99;
     const angle = (new THREE.Vector3(1, 0, 0)).angleTo(direction);
-    const wallGeometry = new THREE.BoxGeometry(length, wallHeigh, wallThickness);
-    const wallMaterial = this._getMaterial('brickWall', length, wallHeigh);
-    wallMaterial.displacementScale = 0.01;
-    wallMaterial.displacementBias = -0.002;
+    const wallGeometry = new THREE.BoxGeometry(length, height, thickness);
+    const wallMaterial = this._getMaterial(textureName, length, height);
+    wallMaterial.displacementScale = displacementScale;
+    wallMaterial.displacementBias = displacementBias;
     const wallMesh = new THREE.Mesh(wallGeometry, wallMaterial);
     wallMesh.matrixAutoUpdate = false;
 
     // move and rotate
     wallMesh.rotateY(angle);
-    wallMesh.position.y = wallHeigh / 2;
+    wallMesh.position.y = height / 2;
     wallMesh.position.x += startX + direction.x / 2;
     wallMesh.position.z += startY + direction.z / 2;
     wallMesh.updateMatrix();
