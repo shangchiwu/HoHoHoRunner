@@ -1,10 +1,14 @@
 export default {
+  server: {
+    apiBaseUrl: '/api',
+    positionUpdateInterval: 1000 / 30
+  },
   renderController: {
     antialias: true,
     camera: {
       fov: 90,
       near: 0.01,
-      far: 10000,
+      far: 1000,
       defaultPosition: [0, 0.5, 0]
     },
     light: {
