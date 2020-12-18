@@ -78,9 +78,10 @@ class ServerActionController extends ActionController {
    */
   async update(loop=false) {
 
+    let nextUpdateTimer;
     if (loop) {
       // schedule next update
-      const nextUpdateTimer = setTimeout(() => { this.update(true); }, this._updateInterval);
+      nextUpdateTimer = setTimeout(() => { this.update(true); }, this._updateInterval);
 
       // clear original scheduled timer
       clearTimeout(this._updateTimer);
