@@ -30,7 +30,12 @@ class App {
   async _initApi() {
     this._apiWrapper = new ApiWrapper(config.server.apiBaseUrl);
     const userId = await this._apiWrapper.getUserId();
-    // this._apiWrapper.setAppInventorWebviewString(userId);
+    try {
+      this._apiWrapper.setAppInventorWebviewString(userId);
+    } catch (e) {
+      console.error(e);
+      alert(e);
+    }
   }
 
   /**
