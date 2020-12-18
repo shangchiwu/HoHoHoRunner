@@ -30,7 +30,7 @@ class App {
   async _initApi() {
     this._apiWrapper = new ApiWrapper(config.server.apiBaseUrl);
     const userId = await this._apiWrapper.getUserId();
-    this._apiWrapper.setAppInventorWebviewString(userId);
+    // this._apiWrapper.setAppInventorWebviewString(userId);
   }
 
   /**
@@ -52,6 +52,7 @@ class App {
    */
   async _initRenderController() {
     this._renderController = new RenderController();
+    await this._renderController.init();
 
     // set size of render window
     this._resizeWindow();
@@ -64,7 +65,7 @@ class App {
 
     // set scene
     const maze = await this._apiWrapper.getMaze();
-    this._renderController.setMaze(maze);
+    this._renderController.setMaze(maze.size, maze.map);
     const state = this._userState;
     this._renderController.setCamera(state.position, state.direction);
   }
@@ -90,7 +91,7 @@ class App {
     this._serverActionController.start();
 
     // start render loop
-    this._renderController.render();
+    this._renderController.animate();
   }
 }
 
