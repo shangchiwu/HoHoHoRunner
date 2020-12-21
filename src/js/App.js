@@ -1,4 +1,4 @@
-import ApiWrapper from './apiWrapper.js';
+import ApiWrapper from './ApiWrapper.js';
 import RenderController from './RenderController.js';
 import ServerActionController from './ServerActionController.js';
 import config from '../config.js';
