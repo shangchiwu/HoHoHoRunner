@@ -26,13 +26,13 @@ export default {
     texture: {
       brickWall: {
         map: './texture/Brick_Wall_017_basecolor.jpg',
-        normalMap: './texture/Brick_Wall_017_normal.jpg',
+        normalMap: './texture/Brick_Wall_017_normal_256.jpg',
         // displacementMap: './texture/Brick_Wall_017_height.jpg'
       },
       rockGround: {
         map: './texture/rocks_ground_08_diff_1k.jpg',
-        normalMap: './texture/rocks_ground_08_nor_1k.jpg',
-        displacementMap: './texture/rocks_ground_08_disp_1k.jpg'
+        normalMap: './texture/rocks_ground_08_nor_256.jpg',
+        displacementMap: './texture/rocks_ground_08_disp_16.jpg'
       }
     },
     floor: {
