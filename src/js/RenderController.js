@@ -82,9 +82,8 @@ class RenderController {
     let output = `server: ${[x, y, direction]}`;
     // // change coordinate system
     // y *= -1;
-    // // direction = (-1 * direction + 90 + 360) % 360;
-
-    // output += `client: ${[x, y, direction]}`;
+    direction = (-1 * direction + 90 + 360) % 360;
+    output += `client: ${[x, y, direction]}`;
     document.querySelector('#debug-output').innerHTML = output;
 
     // move camera
@@ -169,6 +168,7 @@ class RenderController {
     wallMesh.position.y = height / 2;
     wallMesh.position.x += startX + direction.x / 2;
     wallMesh.position.z += startY + direction.z / 2;
+    wallMesh.position.z *= -1;
     wallMesh.updateMatrix();
 
     // add to scene
