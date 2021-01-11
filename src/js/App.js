@@ -1,4 +1,5 @@
 import ApiWrapper from './ApiWrapper.js';
+import DogeController from './DogeController.js';
 import RenderController from './RenderController.js';
 import ServerActionController from './ServerActionController.js';
 import config from '../config.js';
@@ -7,9 +8,12 @@ class App {
   constructor() {
     this._apiWrapper = null;
     this._serverActionController = null;
+    this._dogeController = null;
     this._renderController = null;
     this._userState = null;
     this._stateUpdateHandler = null;
+    this._maze = null;
+    this._finished = false;
   }
 
   /**
@@ -19,6 +23,7 @@ class App {
   async run() {
     await this._initApi();
     await this._initActionController();
+    this._initDoge();
     await this._initRenderController();
     this._startGameLoop();
   }
@@ -36,6 +41,8 @@ class App {
       console.error(e);
       alert(e);
     }
+
+    this._maze = await this._apiWrapper.getMaze();
   }
 
   /**
@@ -52,12 +59,20 @@ class App {
   }
 
   /**
+   * Init doge.
+   */
+  _initDoge() {
+    this._dogeController = new DogeController(this._maze.size[0], this._maze.size[1], config.doge.radius);
+  }
+
+  /**
    * Init render routine.
    * @async
    */
   async _initRenderController() {
     this._renderController = new RenderController();
     await this._renderController.init();
+    this._renderController.setDoge(this._dogeController);
 
     // set size of render window
     this._resizeWindow();
@@ -69,7 +84,6 @@ class App {
     document.querySelector('#hohohorunner-container').appendChild(renderDom);
 
     // set scene
-    const maze = await this._apiWrapper.getMaze();
     this._renderController.setMaze(maze.size, maze.map);
     const state = this._userState;
     this._renderController.setCamera(state.position, state.direction);
@@ -89,7 +103,11 @@ class App {
     // set state update handler
     this._stateUpdateHandler = state => {
       this._renderController.setCamera(state.position, state.direction);
+      this._finished |= this._dogeController.check(state.position[0], state.position[1]);
       this._renderController.render();
+      if (ths._finished) {
+        alert('Doge Doge!!!');
+      }
     };
     this._serverActionController.addUpdateListener(this._stateUpdateHandler);
 

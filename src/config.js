@@ -3,6 +3,12 @@ export default {
     apiBaseUrl: '/api',
     positionUpdateInterval: 1000 / 10
   },
+  doge: {
+    width: 1,
+    height: 1,
+    radius: 0.5,
+    texture: 'doge'
+  },
   renderController: {
     antialias: true,
     camera: {
@@ -33,6 +39,9 @@ export default {
         map: './texture/rocks_ground_08_diff_1k.jpg',
         normalMap: './texture/rocks_ground_08_nor_256.jpg',
         displacementMap: './texture/rocks_ground_08_disp_16.jpg'
+      },
+      doge: {
+        map: './texture/doge_square.jpg'
       }
     },
     floor: {
