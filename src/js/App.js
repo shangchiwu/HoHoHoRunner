@@ -30,7 +30,10 @@ class App {
     this._startGameLoop();
   }
 
-  initBgm() {
+  /**
+   * Init BGM.
+   */
+  _initBgm() {
     const audio = document.createElement('audio');
     audio.autoplay = true;
     audio.load();
