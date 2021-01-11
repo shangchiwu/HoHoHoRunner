@@ -71,38 +71,30 @@ class RenderController {
    */
   setCamera([x, y], direction) {
 
-    // compute look at
-    const lookPoint = new THREE.Vector3(0, 0, -1)
-      .applyAxisAngle(THREE.Object3D.DefaultUp, -1 * THREE.Math.degToRad(direction))
-      .add(this.camera.position);
-
-    y *= -1;
-    lookPoint.y *= -1;
-
-
-
-
-
-
-    // let output = `server: ${[x, y, direction]}`;
-    // // change coordinate system
+    // // compute look at
+    // const lookPoint = new THREE.Vector3(0, 0, -1)
+    //   .applyAxisAngle(THREE.Object3D.DefaultUp, -1 * THREE.Math.degToRad(direction))
+    //   .add(this.camera.position);
 
     // y *= -1;
+    // lookPoint.y *= -1;
 
+    let output = `server: ${[x, y, direction]}`;
+    // // change coordinate system
+    // y *= -1;
     // // direction = (-1 * direction + 90 + 360) % 360;
 
-
     // output += `client: ${[x, y, direction]}`;
-    // document.querySelector('#debug-output').innerHTML = output;
+    document.querySelector('#debug-output').innerHTML = output;
 
     // move camera
     this.camera.position.x = x;
     this.camera.position.z = y;
 
     // compute look at
-    // const lookPoint = new THREE.Vector3(0, 0, -1)
-    //   .applyAxisAngle(THREE.Object3D.DefaultUp, -1 * THREE.Math.degToRad(direction))
-    //   .add(this.camera.position);
+    const lookPoint = new THREE.Vector3(0, 0, -1)
+      .applyAxisAngle(THREE.Object3D.DefaultUp, -1 * THREE.Math.degToRad(direction))
+      .add(this.camera.position);
     this.camera.lookAt(lookPoint);
     this.camera.updateProjectionMatrix();
   }
@@ -127,7 +119,7 @@ class RenderController {
     floorPlaneMesh.matrixAutoUpdate = false;
     floorPlaneMesh.rotateX(-1 * Math.PI / 2);
     floorPlaneMesh.position.x = sizeX / 2;
-    floorPlaneMesh.position.z = sizeY / 2;
+    floorPlaneMesh.position.z = -sizeY / 2;
     floorPlaneMesh.updateMatrix();
     this.scene.add(floorPlaneMesh);
 
