@@ -1,5 +1,5 @@
 export default {
-  bgm: './bgm.mp3',
+  bgm: './audio/bgm.mp3',
   server: {
     apiBaseUrl: '/api',
     positionUpdateInterval: 1000 / 10
