@@ -124,7 +124,7 @@ class RenderController {
     const dogePlaneMesh = new THREE.Mesh(dogePlaneGeomatry, dogePlaneMaterial);
     dogePlaneMesh.matrixAutoUpdate = true;
     dogePlaneMesh.position.x = this.doge.position[0];
-    dogePlaneMesh.position.y = this.doge.position[1] / 2;
+    dogePlaneMesh.position.y = config.doge.height / 2;
     dogePlaneMesh.position.z = this.doge.position[1];
     dogePlaneMesh.updateMatrix();
     this.scene.add(dogePlaneMesh);
