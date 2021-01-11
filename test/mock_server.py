@@ -9,7 +9,7 @@ app = flask.Flask(__name__)
 # global data
 maze = {
     'size': [10, 10],
-    'maze': [
+    'map': [
       [[0, 0], [0, 10]],
       [[0, 10], [10, 10]],
       [[10, 10], [10, 0]],
