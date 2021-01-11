@@ -71,7 +71,7 @@ class RenderController {
    */
   setCamera([x, y], direction) {
     // change coordinate system
-    direction = (direction + 270) % 360;
+    direction = (-1 * direction + 270) % 360;
 
     // move camera
     this.camera.position.x = x;
