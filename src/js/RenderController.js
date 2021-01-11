@@ -70,6 +70,9 @@ class RenderController {
    * @param {number} direction the direction of camera (0 ~ 359 degree).
    */
   setCamera([x, y], direction) {
+    // change coordinate system
+    direction = (direction + 270) % 360;
+
     // move camera
     this.camera.position.x = x;
     this.camera.position.z = y;
