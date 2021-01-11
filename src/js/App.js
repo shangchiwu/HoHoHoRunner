@@ -89,14 +89,12 @@ class App {
     // set state update handler
     this._stateUpdateHandler = state => {
       this._renderController.setCamera(state.position, state.direction);
+      this._renderController.render();
     };
     this._serverActionController.addUpdateListener(this._stateUpdateHandler);
 
     // start position update routine
     this._serverActionController.start();
-
-    // start render loop
-    this._renderController.animate();
   }
 }
 

@@ -127,6 +127,13 @@ class RenderController {
    */
   animate() {
     requestAnimationFrame(() => { this.animate(); });
+    this.render();
+  }
+
+  /**
+   * The render function renders a frame.
+   */
+  render() {
     this.renderer.render(this.scene, this.camera);
   }
 
