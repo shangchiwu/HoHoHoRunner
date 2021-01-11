@@ -103,7 +103,8 @@ class App {
     // set state update handler
     this._stateUpdateHandler = state => {
       this._renderController.setCamera(state.position, state.direction);
-      const result = this._renderController.render();
+      this._renderController.render();
+      const result = this._dogeController.check(state.position[0], state.position[1])
       if (!this._finished && result) {
         this._finished = true;
         alert('Doge Doge!!!');
