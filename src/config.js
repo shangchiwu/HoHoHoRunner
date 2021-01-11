@@ -1,7 +1,7 @@
 export default {
   server: {
     apiBaseUrl: '/api',
-    positionUpdateInterval: 1000 / 30
+    positionUpdateInterval: 1000 / 10
   },
   renderController: {
     antialias: true,
