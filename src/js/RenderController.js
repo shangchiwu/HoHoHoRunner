@@ -70,8 +70,11 @@ class RenderController {
    * @param {number} direction the direction of camera (0 ~ 359 degree).
    */
   setCamera([x, y], direction) {
+    let output = `server: ${[x, y, direction]}`;
     // change coordinate system
     direction = (-1 * direction + 90 + 360) % 360;
+    output += `client: ${[x, y, direction]}`;
+    document.querySelector('#debug-output').innerHTML = output;
 
     // move camera
     this.camera.position.x = x;
