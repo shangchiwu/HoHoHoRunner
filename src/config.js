@@ -5,7 +5,7 @@ export default {
   },
   doge: {
     width: 1,
-    height: 2,
+    height: 1,
     radius: 0.5,
     texture: 'doge'
   },
