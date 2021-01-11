@@ -24,7 +24,7 @@ class DogeController {
   }
 
   check(userX, userY) {
-    const result = thid._radius * this._radius >
+    const result = this._radius * this._radius >
       (this._position[0] - userX) * (this._position[0] - userX) +
       (this._position[1] - userY) * (this._position[1] - userY)
     this._isMet |= result;
