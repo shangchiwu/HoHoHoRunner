@@ -105,7 +105,7 @@ class App {
       this._renderController.setCamera(state.position, state.direction);
       this._finished |= this._dogeController.check(state.position[0], state.position[1]);
       this._renderController.render();
-      if (ths._finished) {
+      if (this._finished) {
         alert('Doge Doge!!!');
       }
     };
