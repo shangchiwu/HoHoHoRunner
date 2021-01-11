@@ -70,20 +70,39 @@ class RenderController {
    * @param {number} direction the direction of camera (0 ~ 359 degree).
    */
   setCamera([x, y], direction) {
-    let output = `server: ${[x, y, direction]}`;
-    // change coordinate system
-    direction = (-1 * direction + 90 + 360) % 360;
-    output += `client: ${[x, y, direction]}`;
-    document.querySelector('#debug-output').innerHTML = output;
+
+    // compute look at
+    const lookPoint = new THREE.Vector3(0, 0, -1)
+      .applyAxisAngle(THREE.Object3D.DefaultUp, -1 * THREE.Math.degToRad(direction))
+      .add(this.camera.position);
+
+    y *= -1;
+    lookPoint.y *= -1;
+
+
+
+
+
+
+    // let output = `server: ${[x, y, direction]}`;
+    // // change coordinate system
+
+    // y *= -1;
+
+    // // direction = (-1 * direction + 90 + 360) % 360;
+
+
+    // output += `client: ${[x, y, direction]}`;
+    // document.querySelector('#debug-output').innerHTML = output;
 
     // move camera
     this.camera.position.x = x;
     this.camera.position.z = y;
 
     // compute look at
-    const lookPoint = new THREE.Vector3(0, 0, -1)
-      .applyAxisAngle(THREE.Object3D.DefaultUp, -1 * THREE.Math.degToRad(direction))
-      .add(this.camera.position);
+    // const lookPoint = new THREE.Vector3(0, 0, -1)
+    //   .applyAxisAngle(THREE.Object3D.DefaultUp, -1 * THREE.Math.degToRad(direction))
+    //   .add(this.camera.position);
     this.camera.lookAt(lookPoint);
     this.camera.updateProjectionMatrix();
   }
