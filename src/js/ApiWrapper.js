@@ -79,7 +79,7 @@ class ApiWrapper {
     }
     return {
       size: res.data.size,
-      map: res.data.maze
+      map: res.data.map
     };
   }
 
