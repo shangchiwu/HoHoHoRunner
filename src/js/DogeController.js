@@ -10,7 +10,6 @@ class DogeController {
       this._randomIntRange(0, sizeX - 1) + 0.5,
       this._randomIntRange(0, sizeY - 1) + 0.5
     ];
-    this._position = [1.5, 2.5];
     this._radius = radius;
     this._isMet = false;
   }
