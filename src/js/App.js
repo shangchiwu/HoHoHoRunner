@@ -6,6 +6,7 @@ import config from '../config.js';
 
 class App {
   constructor() {
+    this._bgm = null;
     this._apiWrapper = null;
     this._serverActionController = null;
     this._dogeController = null;
@@ -21,11 +22,23 @@ class App {
    * @async
    */
   async run() {
+    this._initBgm();
     await this._initApi();
     await this._initActionController();
     this._initDoge();
     await this._initRenderController();
     this._startGameLoop();
+  }
+
+  initBgm() {
+    const audio = document.createElement('audio');
+    audio.autoplay = true;
+    audio.load();
+    audio.addEventListener('load', () => { 
+        audio.play(); 
+    }, true);
+    audio.src = config.bgm;
+    this._bgm = audio;
   }
 
   /**
