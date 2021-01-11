@@ -7,6 +7,8 @@ class RenderController {
     this.camera = null;
     this.renderer = null;
     this.textures = {};
+    this.doge = null;
+    this.dogePlaneMesh = null;
   }
 
   /**
@@ -111,6 +113,25 @@ class RenderController {
   }
 
   /**
+   * Set doge.
+   * @param {DogeController} doge The doge.
+   */
+  setDoge(doge) {
+    this.doge = doge;
+
+    const dogePlaneGeomatry = new THREE.PlaneGeometry(config.doge.width, config.doge.height);
+    const dogePlaneMaterial = this._getMaterial(config.doge.texture, config.doge.width, config.doge.height);
+    const dogePlaneMesh = new THREE.Mesh(dogePlaneGeomatry, dogePlaneMaterial);
+    dogePlaneMesh.matrixAutoUpdate = true;
+    dogePlaneMesh.position.x = this.doge.position[0];
+    dogePlaneMesh.position.y = config.doge.height / 2;
+    dogePlaneMesh.position.z = this.doge.position[1];
+    dogePlaneMesh.updateMatrix();
+    this.scene.add(dogePlaneMesh);
+    this.dogePlaneMesh = dogePlaneMesh;
+  }
+
+  /**
    * Set the size of the render window.
    * It is called when init and the size or orientation of window has been changed.
    * @param {number} width the width of current window
@@ -127,6 +148,14 @@ class RenderController {
    */
   animate() {
     requestAnimationFrame(() => { this.animate(); });
+    this.render();
+  }
+
+  /**
+   * The render function renders a frame.
+   */
+  render() {
+    this.dogePlaneMesh.lookAt(this.camera.position);
     this.renderer.render(this.scene, this.camera);
   }
 
