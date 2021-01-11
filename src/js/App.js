@@ -84,7 +84,7 @@ class App {
     document.querySelector('#hohohorunner-container').appendChild(renderDom);
 
     // set scene
-    this._renderController.setMaze(maze.size, maze.map);
+    this._renderController.setMaze(this._maze.size, this._maze.map);
     const state = this._userState;
     this._renderController.setCamera(state.position, state.direction);
   }
